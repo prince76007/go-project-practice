@@ -1,11 +1,13 @@
 # Go Project
 
 ## Overview
+
 This project is a scalable Go application designed to manage questions and projects through a RESTful API. It utilizes PostgreSQL as the database and includes multiple HTTP endpoints for managing questions and projects.
 
 ## Directory Structure
+
 ```
-go-project
+go-project-practice
 ├── cmd
 │   └── main.go
 ├── internal
@@ -38,19 +40,23 @@ go-project
 ```
 
 ## Features
+
 - **Question Service**: Manage questions with CRUD operations.
 - **Project Service**: Manage projects with CRUD operations.
 - **API Key Authentication**: All endpoints are secured with API key validation.
 - **PostgreSQL Database**: Utilizes PostgreSQL for data storage.
 
 ## Setup Instructions
+
 1. Clone the repository:
+
    ```
    git clone <repository-url>
-   cd go-project
+   cd go-project-practice
    ```
 
 2. Install dependencies:
+
    ```
    go mod tidy
    ```
@@ -63,20 +69,25 @@ go-project
    ```
 
 ## API Endpoints
+
 ### Question Service
+
 - **GET /questions**: Retrieve all questions.
 - **POST /questions**: Create a new question.
 - **PUT /questions/{id}**: Update an existing question.
 - **DELETE /questions/{id}**: Delete a question.
 
 ### Project Service
+
 - **GET /projects**: Retrieve all projects.
 - **POST /projects**: Create a new project.
 - **PUT /projects/{id}**: Update an existing project.
 - **DELETE /projects/{id}**: Delete a project.
 
 ## Contributing
+
 Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.
 
 ## License
+
 This project is licensed under the MIT License.

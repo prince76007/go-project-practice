@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"go-project/internal/models"
-	"go-project/internal/repositories"
+	"go-project-practice/internal/models"
+	"go-project-practice/internal/repositories"
 )
 
 type ProjectService struct {
@@ -24,22 +24,22 @@ func (s *ProjectService) CreateProject(project *models.Project) error {
 	return s.repo.Create(project)
 }
 
-func (s *ProjectService) GetProject(id string) (*models.Project, error) {
+func (s *ProjectService) GetProject(id int) (*models.Project, error) {
 	return s.repo.GetByID(id)
 }
 
 func (s *ProjectService) UpdateProject(project *models.Project) error {
-	if project.ID == "" {
+	if project.ID == 0 {
 		return errors.New("project ID is required")
 	}
 	project.UpdateDate = time.Now()
 	return s.repo.Update(project)
 }
 
-func (s *ProjectService) DeleteProject(id string) error {
+func (s *ProjectService) DeleteProject(id int) error {
 	return s.repo.Delete(id)
 }
 
-func (s *ProjectService) GetAllProjects(tenantID string) ([]models.Project, error) {
+func (s *ProjectService) GetAllProjects(tenantID int) ([]models.Project, error) {
 	return s.repo.GetAllByTenantID(tenantID)
 }

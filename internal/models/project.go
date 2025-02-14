@@ -1,6 +1,12 @@
+package models
+
+import "time"
+
 type Project struct {
-    ID          string `json:"id"`
-    TenantID    string `json:"tenant_id"`
-    Name        string `json:"name"`
-    LanguageCode string `json:"language_code"`
+	ID           int       `json:"id"`
+	Name         string    `json:"name"`
+	TenantID     string    `json:"tenant_id"`
+	LanguageCode string    `json:"language_code"`
+	CreateDate   time.Time `json:"create_date"`
+	UpdateDate   time.Time `json:"update_date"`
 }

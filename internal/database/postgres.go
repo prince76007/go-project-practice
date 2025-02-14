@@ -1,39 +1,42 @@
 package database
 
 import (
-    "database/sql"
-    "fmt"
-    "log"
+	"database/sql"
+	"fmt"
+	"log"
 
-    _ "github.com/lib/pq" // PostgreSQL driver
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 var db *sql.DB
 
 // Connect establishes a connection to the PostgreSQL database.
-func Connect(connStr string) {
-    var err error
-    db, err = sql.Open("postgres", connStr)
-    if err != nil {
-        log.Fatalf("Error opening database: %v", err)
-    }
+func Connect(connStr string) (*sql.DB, error) {
+	var err error
+	db, err = sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatalf("Error opening database: %v", err)
+		return nil, err
+	}
 
-    if err = db.Ping(); err != nil {
-        log.Fatalf("Error connecting to the database: %v", err)
-    }
+	if err = db.Ping(); err != nil {
+		log.Fatalf("Error connecting to the database: %v", err)
+		return nil, err
+	}
 
-    fmt.Println("Successfully connected to the database")
+	fmt.Println("Successfully connected to the database")
+	return db, err
 }
 
 // Close closes the database connection.
 func Close() {
-    if err := db.Close(); err != nil {
-        log.Fatalf("Error closing the database: %v", err)
-    }
-    fmt.Println("Database connection closed")
+	if err := db.Close(); err != nil {
+		log.Fatalf("Error closing the database: %v", err)
+	}
+	fmt.Println("Database connection closed")
 }
 
 // GetDB returns the database connection.
 func GetDB() *sql.DB {
-    return db
+	return db
 }

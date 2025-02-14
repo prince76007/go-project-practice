@@ -3,9 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"time"
 
-	"go-project/internal/models"
+	"go-project-practice/internal/models"
 )
 
 type ProjectRepository struct {
@@ -50,6 +49,25 @@ func (r *ProjectRepository) Delete(id int) error {
 func (r *ProjectRepository) GetAll() ([]models.Project, error) {
 	query := `SELECT id, tenant_id, name, language_code FROM projects`
 	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []models.Project
+	for rows.Next() {
+		var project models.Project
+		if err := rows.Scan(&project.ID, &project.TenantID, &project.Name, &project.LanguageCode); err != nil {
+			return nil, err
+		}
+		projects = append(projects, project)
+	}
+	return projects, nil
+}
+
+func (r *ProjectRepository) GetAllByTenantID(tenant_id int) ([]models.Project, error) {
+	query := `SELECT id, tenant_id, name, language_code FROM projects WHERE tenant_id = $1`
+	rows, err := r.db.Query(query, tenant_id)
 	if err != nil {
 		return nil, err
 	}

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"go-project/internal/models"
-	"go-project/internal/repositories"
+	"go-project-practice/internal/models"
+	"go-project-practice/internal/repositories"
 )
 
 type QuestionService struct {
@@ -29,10 +29,11 @@ func (s *QuestionService) GetQuestion(id int) (*models.Question, error) {
 	return s.repo.GetByID(id)
 }
 
-func (s *QuestionService) UpdateQuestion(question *models.Question) error {
-	if question.ID == 0 || question.Question == "" {
+func (s *QuestionService) UpdateQuestion(id int, question *models.Question) error {
+	if id == 0 || question.Question == "" {
 		return errors.New("invalid question data")
 	}
+	question.ID = id
 	question.UpdateDate = time.Now()
 	return s.repo.Update(question)
 }
@@ -43,4 +44,8 @@ func (s *QuestionService) DeleteQuestion(id int) error {
 
 func (s *QuestionService) GetQuestionsByProject(projectID int) ([]models.Question, error) {
 	return s.repo.GetByProjectID(projectID)
+}
+
+func (s *QuestionService) GetAllQuestions() ([]models.Question, error) {
+	return s.repo.GetAll()
 }

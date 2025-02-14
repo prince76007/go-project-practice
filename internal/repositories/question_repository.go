@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"go-project/internal/models"
+	"go-project-practice/internal/models"
 )
 
 type QuestionRepository struct {
@@ -48,6 +48,26 @@ func (r *QuestionRepository) Delete(id int) error {
 func (r *QuestionRepository) GetAll() ([]models.Question, error) {
 	query := `SELECT id, project_id, question, type, create_date, update_date, language_code, tenant_id FROM questions`
 	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var questions []models.Question
+	for rows.Next() {
+		var question models.Question
+		if err := rows.Scan(&question.ID, &question.ProjectID, &question.Question, &question.Type, &question.CreateDate, &question.UpdateDate, &question.LanguageCode, &question.TenantID); err != nil {
+			return nil, err
+		}
+		questions = append(questions, question)
+	}
+	return questions, nil
+}
+
+func (r *QuestionRepository) GetByProjectID(projectID int) ([]models.Question, error) {
+	query := `SELECT id, project_id, question, type, create_date, update_date, language_code, tenant_id 
+			  FROM questions WHERE project_id = $1`
+	rows, err := r.db.Query(query, projectID)
 	if err != nil {
 		return nil, err
 	}

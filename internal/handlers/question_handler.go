@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"go-project-practice/internal/models"
+	"go-project-practice/internal/services"
 	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
-	"your_project/internal/models"
-	"your_project/internal/services"
 )
 
 type QuestionHandler struct {
@@ -25,8 +27,12 @@ func (h *QuestionHandler) GetQuestions(c *gin.Context) {
 }
 
 func (h *QuestionHandler) GetQuestion(c *gin.Context) {
-	id := c.Param("id")
-	question, err := h.service.GetQuestionByID(id)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid question ID"})
+		return
+	}
+	question, err := h.service.GetQuestion(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Question not found"})
 		return
@@ -40,31 +46,40 @@ func (h *QuestionHandler) CreateQuestion(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	createdQuestion, err := h.service.CreateQuestion(question)
+	err := h.service.CreateQuestion(&question)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, createdQuestion)
+	c.JSON(http.StatusCreated, nil)
 }
 
 func (h *QuestionHandler) UpdateQuestion(c *gin.Context) {
-	id := c.Param("id")
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid question ID"})
+		return
+	}
+
 	var question models.Question
 	if err := c.ShouldBindJSON(&question); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	updatedQuestion, err := h.service.UpdateQuestion(id, question)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	updateErr := h.service.UpdateQuestion(id, &question)
+	if updateErr != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": updateErr.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, updatedQuestion)
+	c.JSON(http.StatusOK, nil)
 }
 
 func (h *QuestionHandler) DeleteQuestion(c *gin.Context) {
-	id := c.Param("id")
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid question ID"})
+		return
+	}
 	if err := h.service.DeleteQuestion(id); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
