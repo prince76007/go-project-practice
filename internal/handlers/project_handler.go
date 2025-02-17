@@ -1,93 +1,87 @@
 package handlers
 
 import (
-	"encoding/json"
 	"go-project-practice/internal/models"
 	"go-project-practice/internal/services"
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 type ProjectHandler struct {
 	service services.ProjectService
 }
 
-func NewProjectHandler(service services.ProjectService) ProjectHandler {
-	return ProjectHandler{service: service}
+func NewProjectHandler(service services.ProjectService) *ProjectHandler {
+	return &ProjectHandler{service: service}
 }
 
-func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
+func (h *ProjectHandler) CreateProject(c *gin.Context) {
 	var project models.Project
-	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := c.ShouldBindJSON(&project); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	err := h.service.CreateProject(&project)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w)
+	c.JSON(http.StatusCreated, nil)
 }
 
-func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (h *ProjectHandler) GetProject(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		http.Error(w, "Invalid project ID", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
 		return
 	}
 
 	project, err := h.service.GetProject(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Project not found"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(project)
+	c.JSON(http.StatusOK, project)
 }
 
-func (h *ProjectHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	var err error
+func (h *ProjectHandler) UpdateProject(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
+		return
+	}
 
 	var project models.Project
-	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := c.ShouldBindJSON(&project); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	project.ID, err = strconv.Atoi(id)
+	project.ID = id
+	err = h.service.UpdateProject(&project)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	var err2 error = h.service.UpdateProject(&project)
-	if err2 != nil {
-		http.Error(w, err2.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	json.NewEncoder(w)
+	c.JSON(http.StatusOK, nil)
 }
 
-func (h *ProjectHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (h *ProjectHandler) DeleteProject(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project ID"})
 		return
 	}
 	if err := h.service.DeleteProject(id); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	c.JSON(http.StatusNoContent, nil)
 }

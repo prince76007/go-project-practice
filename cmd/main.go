@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"go-project-practice/internal/config"
 	"go-project-practice/internal/database"
 	"go-project-practice/internal/routes"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -14,18 +15,20 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Initialize database connection
-	db, err := database.Connect(cfg.DatabaseURL)
+	_, err := database.Connect(cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("Could not connect to database: %v", err)
 	}
-	defer db.Close()
+	defer database.Close()
 
 	// Set up HTTP routes
-	router := routes.SetupRouter()
+	router := gin.Default()
+	routes.RegisterQuestionRoutes(router)
+	routes.RegisterProjectRoutes(router)
 
 	// Start the server
 	log.Printf("Starting server on port %s", cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
+	if err := router.Run(":" + cfg.Port); err != nil {
 		log.Fatalf("Could not start server: %v", err)
 	}
 }

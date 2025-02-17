@@ -1,26 +1,21 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
-	_ "github.com/lib/pq" // PostgreSQL driver
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var db *sql.DB
+var db *gorm.DB
 
 // Connect establishes a connection to the PostgreSQL database.
-func Connect(connStr string) (*sql.DB, error) {
+func Connect(connStr string) (*gorm.DB, error) {
 	var err error
-	db, err = sql.Open("postgres", connStr)
+	db, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
-		return nil, err
-	}
-
-	if err = db.Ping(); err != nil {
-		log.Fatalf("Error connecting to the database: %v", err)
 		return nil, err
 	}
 
@@ -28,15 +23,20 @@ func Connect(connStr string) (*sql.DB, error) {
 	return db, err
 }
 
-// Close closes the database connection.
-func Close() {
-	if err := db.Close(); err != nil {
-		log.Fatalf("Error closing the database: %v", err)
-	}
-	fmt.Println("Database connection closed")
+// GetDB returns the database connection.
+func GetDB() *gorm.DB {
+	return db
 }
 
-// GetDB returns the database connection.
-func GetDB() *sql.DB {
-	return db
+func Close() {
+	if db != nil {
+		sqlDB, err := db.DB()
+		if err != nil {
+			log.Printf("Error getting sql.DB from gorm.DB: %v", err)
+			return
+		}
+		if err := sqlDB.Close(); err != nil {
+			log.Printf("Error closing database: %v", err)
+		}
+	}
 }
