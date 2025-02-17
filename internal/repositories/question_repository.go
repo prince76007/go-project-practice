@@ -25,7 +25,7 @@ func (r *QuestionRepository) GetByID(id int) (*models.Question, error) {
 }
 
 func (r *QuestionRepository) Update(question *models.Question) error {
-	return r.db.Save(question).Error
+	return r.db.Updates(question).Error
 }
 
 func (r *QuestionRepository) Delete(id int) error {

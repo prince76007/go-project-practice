@@ -1,0 +1,32 @@
+ 
+# Binaries
+*.exe
+*.out
+*.o
+*.a
+*.so
+*.dll
+
+# Build artifacts
+/bin/
+/obj/
+/build/
+/dist/
+
+# Go modules
+go.sum
+vendor/
+
+# IDE / Editor Files
+.vscode/
+.idea/
+*.iml
+
+# Logs & Debug Files
+*.log
+*.tmp
+debug/
+
+# Environment & Config Files
+.env
+config.yaml

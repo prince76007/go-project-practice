@@ -25,7 +25,7 @@ func (r *ProjectRepository) GetByID(id int) (*models.Project, error) {
 }
 
 func (r *ProjectRepository) Update(project *models.Project) error {
-	return r.db.Save(project).Error
+	return r.db.Updates(project).Error
 }
 
 func (r *ProjectRepository) Delete(id int) error {
