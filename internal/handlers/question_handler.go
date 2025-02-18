@@ -18,7 +18,12 @@ func NewQuestionHandler(service services.QuestionService) *QuestionHandler {
 }
 
 func (h *QuestionHandler) GetQuestions(c *gin.Context) {
-	questions, err := h.service.GetAllQuestions()
+	projectID, err := strconv.Atoi(c.Param("project_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project_id"})
+		return
+	}
+	questions, err := h.service.GetQuestionsByProject(projectID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -41,12 +46,20 @@ func (h *QuestionHandler) GetQuestion(c *gin.Context) {
 }
 
 func (h *QuestionHandler) CreateQuestion(c *gin.Context) {
-	var question models.Question
+	projectID, err := strconv.Atoi(c.Param("project_id"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid project_id"})
+		return
+	}
+
+	//question := models.Question{ProjectID: projectID}
+	var question models.Question = models.Question{ProjectID: projectID}
 	if err := c.ShouldBindJSON(&question); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := h.service.CreateQuestion(&question)
+	err = h.service.CreateQuestion(&question)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

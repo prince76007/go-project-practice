@@ -17,10 +17,10 @@ func RegisterQuestionRoutes(router *gin.Engine) {
 
 	questionRoutes := router.Group("/api/questions")
 	{
-		questionRoutes.GET("", questionHandler.GetQuestions)
-		questionRoutes.POST("", questionHandler.CreateQuestion)
+		questionRoutes.GET("/project/:project_id", questionHandler.GetQuestions)
+		questionRoutes.POST("/project/:project_id", questionHandler.CreateQuestion)
 		questionRoutes.GET("/:id", questionHandler.GetQuestion)
-		questionRoutes.PUT("/:id", questionHandler.UpdateQuestion)
+		questionRoutes.PATCH("/:id", questionHandler.UpdateQuestion)
 		questionRoutes.DELETE("/:id", questionHandler.DeleteQuestion)
 	}
 }

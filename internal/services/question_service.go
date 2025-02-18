@@ -46,6 +46,6 @@ func (s *QuestionService) GetQuestionsByProject(projectID int) ([]models.Questio
 	return s.repo.GetByProjectID(projectID)
 }
 
-func (s *QuestionService) GetAllQuestions() ([]models.Question, error) {
-	return s.repo.GetAll()
-}
+// func (s *QuestionService) GetAllQuestionsBy() ([]models.Question, error) {
+// 	return s.repo.GetAll()
+// }
