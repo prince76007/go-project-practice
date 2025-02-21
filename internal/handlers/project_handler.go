@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"go-project-practice/internal/models"
-	"go-project-practice/internal/services"
 	"net/http"
 	"strconv"
+
+	"go-project-practice/internal/models"
+	"go-project-practice/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
